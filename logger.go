@@ -30,7 +30,7 @@ type Logger interface {
 func LoggerHandler(logger Logger) gin.HandlerFunc {
 	return func(gc *gin.Context) {
 		start := time.Now().UTC()
-		path := gc.Request.URL.Path
+		path := gc.Request.URL.RawPath
 		raw := gc.Request.URL.RawQuery
 		gc.Next()
 		end := time.Now().UTC()
