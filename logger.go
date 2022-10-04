@@ -30,16 +30,20 @@ type Logger interface {
 func LoggerHandler(logger Logger) gin.HandlerFunc {
 	return func(gc *gin.Context) {
 		start := time.Now().UTC()
-		path := gc.Request.URL.RawPath
-		raw := gc.Request.URL.RawQuery
+		path := gc.Request.URL.Path
+		rawPath := gc.Request.URL.RawPath
+		rawQuery := gc.Request.URL.RawQuery
 		gc.Next()
 		end := time.Now().UTC()
 		latency := end.Sub(start)
 		if latency > time.Minute {
 			latency = latency.Truncate(time.Second)
 		}
-		if raw != "" {
-			path = path + "?" + raw
+		if rawPath != "" {
+			path = rawPath
+		}
+		if rawQuery != "" {
+			path = path + "?" + rawQuery
 		}
 		errs := gc.Errors.ByType(gin.ErrorTypePrivate)
 		if len(errs) > 0 {
