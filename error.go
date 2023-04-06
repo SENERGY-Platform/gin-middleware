@@ -17,39 +17,26 @@
 package gin_mw
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
-type ErrResponse struct {
-	Status string   `json:"status"`
-	Errors []string `json:"errors"`
-}
-
-type ErrorWithCode interface {
-	Error() string
-	Unwrap() error
-	Code() int
-}
-
-func ErrorHandler(gc *gin.Context) {
-	gc.Next()
-	if !gc.IsAborted() && len(gc.Errors) > 0 {
-		if gc.Writer.Status() < 400 {
-			gc.Status(http.StatusInternalServerError)
-		}
-		var errs []string
-		for _, e := range gc.Errors {
-			var errWC ErrorWithCode
-			if errors.As(e, &errWC) {
-				gc.Status(errWC.Code())
+func ErrorHandler(f func(error) int, sep string) gin.HandlerFunc {
+	return func(gc *gin.Context) {
+		gc.Next()
+		if !gc.IsAborted() && len(gc.Errors) > 0 {
+			var errs []string
+			for _, e := range gc.Errors {
+				if sc := f(e); sc != 0 {
+					gc.Status(sc)
+				}
+				errs = append(errs, e.Error())
 			}
-			errs = append(errs, e.Error())
+			if gc.Writer.Status() < 400 {
+				gc.Status(http.StatusInternalServerError)
+			}
+			gc.String(-1, strings.Join(errs, sep))
 		}
-		gc.JSON(-1, &ErrResponse{
-			Status: http.StatusText(gc.Writer.Status()),
-			Errors: errs,
-		})
 	}
 }
