@@ -27,12 +27,13 @@ type Logger interface {
 	Debug(v ...any)
 }
 
-func LoggerHandler(logger Logger, generators ...func(*gin.Context) string) gin.HandlerFunc {
+func LoggerHandler(logger Logger, pathFilter []string, generators ...func(*gin.Context) string) gin.HandlerFunc {
 	return func(gc *gin.Context) {
 		start := time.Now().UTC()
 		path := gc.Request.URL.Path
 		rawPath := gc.Request.URL.RawPath
 		rawQuery := gc.Request.URL.RawQuery
+		fullPath := gc.FullPath()
 		gc.Next()
 		end := time.Now().UTC()
 		latency := end.Sub(start)
@@ -55,7 +56,18 @@ func LoggerHandler(logger Logger, generators ...func(*gin.Context) string) gin.H
 				logger.Error(msg + " | " + e.Error())
 			}
 		} else {
-			logger.Debug(msg)
+			if !filtered(fullPath, pathFilter) {
+				logger.Debug(msg)
+			}
 		}
 	}
+}
+
+func filtered(p string, filter []string) bool {
+	for _, f := range filter {
+		if p == f {
+			return true
+		}
+	}
+	return false
 }
