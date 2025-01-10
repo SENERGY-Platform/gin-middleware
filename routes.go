@@ -33,7 +33,3 @@ func (r Routes[T]) Set(a T, router routerItf, logger loggerItf) error {
 	}
 	return nil
 }
-
-func (r *Routes[T]) Append(routes Routes[T]) {
-	*r = append(*r, routes...)
-}
