@@ -56,6 +56,6 @@ func StructuredRecoveryHandler(structLogger recoveryStructuredLogger, handle gin
 	}
 }
 
-func DefaultHandleRecovery(gc *gin.Context, _ any) {
+func DefaultRecoveryFunc(gc *gin.Context, _ any) {
 	gc.AbortWithStatus(http.StatusInternalServerError)
 }
