@@ -9,22 +9,22 @@ import (
 	"time"
 )
 
-const (
-	methodAttrKey       = "method"
-	statusCodeAttrKey   = "status"
-	latencyAttrKey      = "latency"
-	pathAttrKey         = "path"
-	protocolAttrKey     = "protocol"
-	userAgentAttrKey    = "user_agent"
-	bodySizeAttrKey     = "body_size"
-	errorMessageAttrKey = "error_msg"
-)
-
-type structuredLogger interface {
+type structLogger interface {
 	DebugContext(ctx context.Context, msg string, args ...any)
 }
 
-func StructuredLoggerHandler(structLogger structuredLogger, skipPaths []string, skipper gin.Skipper, generators ...func(*gin.Context) (string, any)) gin.HandlerFunc {
+type structAttrProvider interface {
+	PathKey() string
+	StatusCodeKey() string
+	MethodKey() string
+	LatencyKey() string
+	ProtocolKey() string
+	UserAgentKey() string
+	BodySizeKey() string
+	ErrMsgKey() string
+}
+
+func StructuredLoggerHandler(structLogger structLogger, structAttrProvider structAttrProvider, skipPaths []string, skipper gin.Skipper, generators ...func(*gin.Context) (string, any)) gin.HandlerFunc {
 	var skip map[string]struct{}
 	if len(skipPaths) > 0 {
 		skip = make(map[string]struct{})
@@ -44,20 +44,20 @@ func StructuredLoggerHandler(structLogger structuredLogger, skipPaths []string, 
 			path = path + "?" + rawQuery
 		}
 		args := []any{
-			statusCodeAttrKey, gc.Writer.Status(),
-			methodAttrKey, gc.Request.Method,
-			pathAttrKey, path,
-			protocolAttrKey, gc.Request.Proto,
-			userAgentAttrKey, gc.Request.UserAgent(),
-			latencyAttrKey, time.Now().Sub(start),
-			bodySizeAttrKey, gc.Writer.Size(),
+			structAttrProvider.StatusCodeKey(), gc.Writer.Status(),
+			structAttrProvider.MethodKey(), gc.Request.Method,
+			structAttrProvider.PathKey(), path,
+			structAttrProvider.ProtocolKey(), gc.Request.Proto,
+			structAttrProvider.UserAgentKey(), gc.Request.UserAgent(),
+			structAttrProvider.LatencyKey(), time.Now().Sub(start),
+			structAttrProvider.BodySizeKey(), gc.Writer.Size(),
 		}
 		for _, generator := range generators {
 			key, value := generator(gc)
 			args = append(args, key, value)
 		}
 		if errMsg := joinErrors(gc.Errors.ByType(gin.ErrorTypePrivate)); errMsg != "" {
-			args = append(args, errorMessageAttrKey, errMsg)
+			args = append(args, structAttrProvider.ErrMsgKey(), errMsg)
 		}
 		structLogger.DebugContext(gc.Request.Context(), http.StatusText(gc.Writer.Status()), args...)
 	}

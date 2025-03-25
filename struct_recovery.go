@@ -12,13 +12,15 @@ import (
 	"strings"
 )
 
-const stackTraceAttrKey = "stack_trace"
-
-type recoveryStructuredLogger interface {
+type recoveryStructLogger interface {
 	ErrorContext(ctx context.Context, msg string, args ...any)
 }
 
-func StructuredRecoveryHandler(structLogger recoveryStructuredLogger, handle gin.RecoveryFunc) gin.HandlerFunc {
+type recoveryStructAttrProvider interface {
+	StackTraceKey() string
+}
+
+func StructuredRecoveryHandler(structLogger recoveryStructLogger, structAttrProvider recoveryStructAttrProvider, handle gin.RecoveryFunc) gin.HandlerFunc {
 	return func(gc *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -47,7 +49,7 @@ func StructuredRecoveryHandler(structLogger recoveryStructuredLogger, handle gin
 						}
 						buf = make([]byte, 2*len(buf))
 					}
-					structLogger.ErrorContext(gc.Request.Context(), fmt.Sprintf("%s", err), stackTraceAttrKey, string(stack))
+					structLogger.ErrorContext(gc.Request.Context(), fmt.Sprintf("%s", err), structAttrProvider.StackTraceKey(), string(stack))
 					handle(gc, err)
 				}
 			}
