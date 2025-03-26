@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+const (
+	userAgentKey = "user_agent"
+	bodySizeKey  = "body_size"
+)
+
 type structLogger interface {
 	DebugContext(ctx context.Context, msg string, args ...any)
 }
@@ -19,9 +24,7 @@ type structAttrProvider interface {
 	MethodKey() string
 	LatencyKey() string
 	ProtocolKey() string
-	UserAgentKey() string
-	BodySizeKey() string
-	ErrMsgKey() string
+	ErrorKey() string
 }
 
 func StructuredLoggerHandler(structLogger structLogger, structAttrProvider structAttrProvider, skipPaths []string, skipper gin.Skipper, generators ...func(*gin.Context) (string, any)) gin.HandlerFunc {
@@ -48,16 +51,16 @@ func StructuredLoggerHandler(structLogger structLogger, structAttrProvider struc
 			structAttrProvider.MethodKey(), gc.Request.Method,
 			structAttrProvider.PathKey(), path,
 			structAttrProvider.ProtocolKey(), gc.Request.Proto,
-			structAttrProvider.UserAgentKey(), gc.Request.UserAgent(),
+			userAgentKey, gc.Request.UserAgent(),
 			structAttrProvider.LatencyKey(), time.Now().Sub(start),
-			structAttrProvider.BodySizeKey(), gc.Writer.Size(),
+			bodySizeKey, gc.Writer.Size(),
 		}
 		for _, generator := range generators {
 			key, value := generator(gc)
 			args = append(args, key, value)
 		}
 		if errMsg := joinErrors(gc.Errors.ByType(gin.ErrorTypePrivate)); errMsg != "" {
-			args = append(args, structAttrProvider.ErrMsgKey(), errMsg)
+			args = append(args, structAttrProvider.ErrorKey(), errMsg)
 		}
 		structLogger.DebugContext(gc.Request.Context(), http.StatusText(gc.Writer.Status()), args...)
 	}
