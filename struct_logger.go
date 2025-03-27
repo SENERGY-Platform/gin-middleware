@@ -52,7 +52,7 @@ func StructuredLoggerHandler(structLogger structLogger, structAttrProvider struc
 			structAttrProvider.PathKey(), path,
 			structAttrProvider.ProtocolKey(), gc.Request.Proto,
 			userAgentKey, gc.Request.UserAgent(),
-			structAttrProvider.LatencyKey(), time.Now().Sub(start),
+			structAttrProvider.LatencyKey(), time.Now().Sub(start).String(),
 			bodySizeKey, gc.Writer.Size(),
 		}
 		for _, generator := range generators {
