@@ -15,7 +15,7 @@ const (
 )
 
 type structLogger interface {
-	DebugContext(ctx context.Context, msg string, args ...any)
+	InfoContext(ctx context.Context, msg string, args ...any)
 }
 
 type structAttrProvider interface {
@@ -62,7 +62,7 @@ func StructuredLoggerHandler(structLogger structLogger, structAttrProvider struc
 		if errMsg := joinErrors(gc.Errors.ByType(gin.ErrorTypePrivate)); errMsg != "" {
 			args = append(args, structAttrProvider.ErrorKey(), errMsg)
 		}
-		structLogger.DebugContext(gc.Request.Context(), http.StatusText(gc.Writer.Status()), args...)
+		structLogger.InfoContext(gc.Request.Context(), http.StatusText(gc.Writer.Status()), args...)
 	}
 }
 
