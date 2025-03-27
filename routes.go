@@ -15,7 +15,7 @@ type Routes[T any] []func(a T) (m, p string, hf gin.HandlerFunc)
 
 func (r Routes[T]) Set(a T, router routerItf) ([][2]string, error) {
 	set := make(map[string]struct{})
-	var endpoints [][2]string
+	var routes [][2]string
 	for _, route := range r {
 		m, p, hf := route(a)
 		key := m + router.BasePath() + p
@@ -24,7 +24,7 @@ func (r Routes[T]) Set(a T, router routerItf) ([][2]string, error) {
 		}
 		set[key] = struct{}{}
 		router.Handle(m, p, hf)
-		endpoints = append(endpoints, [2]string{m, path.Join(router.BasePath(), p)})
+		routes = append(routes, [2]string{m, path.Join(router.BasePath(), p)})
 	}
-	return endpoints, nil
+	return routes, nil
 }
