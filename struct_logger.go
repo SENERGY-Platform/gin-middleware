@@ -27,7 +27,7 @@ type structAttrProvider interface {
 	ErrorKey() string
 }
 
-func StructuredLoggerHandler(structLogger structLogger, structAttrProvider structAttrProvider, skipPaths []string, skipper gin.Skipper, generators ...func(*gin.Context) (string, any)) gin.HandlerFunc {
+func StructLoggerHandler(structLogger structLogger, structAttrProvider structAttrProvider, skipPaths []string, skipper gin.Skipper, generators ...func(*gin.Context) (string, any)) gin.HandlerFunc {
 	var skip map[string]struct{}
 	if len(skipPaths) > 0 {
 		skip = make(map[string]struct{})

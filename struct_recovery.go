@@ -18,7 +18,7 @@ type recoveryStructLogger interface {
 	ErrorContext(ctx context.Context, msg string, args ...any)
 }
 
-func StructuredRecoveryHandler(structLogger recoveryStructLogger, handle gin.RecoveryFunc) gin.HandlerFunc {
+func StructRecoveryHandler(structLogger recoveryStructLogger, handle gin.RecoveryFunc) gin.HandlerFunc {
 	return func(gc *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
