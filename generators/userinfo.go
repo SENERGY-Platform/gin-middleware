@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	userInfoKey = "user"
+	userInfoKey = "userinfo"
 	userNameKey = "name"
 	userIdKey   = "id"
 )
