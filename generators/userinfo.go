@@ -44,7 +44,7 @@ func NewUserInfoGenerator(errorLogger *slog.Logger, structAttrProvider structAtt
 func (c *UserInfoGenerator) Generate(gc *gin.Context) (string, any) {
 	token, err := jwt.GetParsedToken(gc.Request)
 	if err != nil {
-		c.errorLogger.Warn("could not decode token", c.structAttrProvider.ErrorKey(), err)
+		c.errorLogger.Debug("could not decode token", c.structAttrProvider.ErrorKey(), err)
 		return userInfoKey, map[string]string{
 			userIdKey: gc.Request.Header.Get("X-User-Id"),
 		}
