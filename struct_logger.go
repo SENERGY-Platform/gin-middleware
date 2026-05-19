@@ -3,10 +3,11 @@ package gin_mw
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -62,7 +63,7 @@ func StructLoggerHandler(structLogger structLogger, structAttrProvider structAtt
 		if errMsg := joinErrors(gc.Errors.ByType(gin.ErrorTypePrivate)); errMsg != "" {
 			args = append(args, structAttrProvider.ErrorKey(), errMsg)
 		}
-		structLogger.InfoContext(gc.Request.Context(), http.StatusText(gc.Writer.Status()), args...)
+		structLogger.InfoContext(gc, http.StatusText(gc.Writer.Status()), args...)
 	}
 }
 

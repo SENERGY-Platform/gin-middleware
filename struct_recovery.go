@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net"
 	"net/http"
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 const stackTraceKey = "stack_trace"
@@ -47,7 +48,7 @@ func StructRecoveryHandler(structLogger recoveryStructLogger, handle gin.Recover
 						}
 						buf = make([]byte, 2*len(buf))
 					}
-					structLogger.ErrorContext(gc.Request.Context(), fmt.Sprintf("%s", err), stackTraceKey, string(stack))
+					structLogger.ErrorContext(gc, fmt.Sprintf("%s", err), stackTraceKey, string(stack))
 					handle(gc, err)
 				}
 			}
