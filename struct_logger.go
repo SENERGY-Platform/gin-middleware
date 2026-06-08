@@ -38,19 +38,14 @@ func StructLoggerHandler(structLogger structLogger, structAttrProvider structAtt
 	}
 	return func(gc *gin.Context) {
 		start := time.Now()
-		path := gc.Request.URL.Path
-		rawQuery := gc.Request.URL.RawQuery
 		gc.Next()
-		if _, ok := skip[path]; ok || (skipper != nil && skipper(gc)) {
+		if _, ok := skip[gc.Request.URL.Path]; ok || (skipper != nil && skipper(gc)) {
 			return
-		}
-		if rawQuery != "" {
-			path = path + "?" + rawQuery
 		}
 		args := []any{
 			structAttrProvider.StatusCodeKey(), gc.Writer.Status(),
 			structAttrProvider.MethodKey(), gc.Request.Method,
-			structAttrProvider.PathKey(), path,
+			structAttrProvider.PathKey(), gc.Request.URL.String(),
 			structAttrProvider.ProtocolKey(), gc.Request.Proto,
 			userAgentKey, gc.Request.UserAgent(),
 			structAttrProvider.LatencyKey(), time.Now().Sub(start),
