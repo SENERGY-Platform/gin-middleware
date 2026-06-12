@@ -50,10 +50,10 @@ func AddBaggageToHTTPRequest(r *http.Request, key, value string) error {
 		return fmt.Errorf("request is nil")
 	}
 	if key == "" {
-		return fmt.Errorf("key is empty")
+		return nil
 	}
 	if value == "" {
-		return fmt.Errorf("value is empty")
+		return nil
 	}
 	if strings.Contains(key, " ") {
 		return fmt.Errorf("key contains spaces")
