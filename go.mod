@@ -33,7 +33,7 @@ require (
 )
 
 require (
-	github.com/SENERGY-Platform/service-commons v0.0.0-20250903071414-1b34f1965afa
+	github.com/SENERGY-Platform/service-commons v0.0.0-20260821114734-3e4578ac2358
 	github.com/bytedance/sonic v1.15.1 // indirect
 	github.com/bytedance/sonic/loader v0.5.1 // indirect
 	github.com/cloudwego/base64x v0.1.7 // indirect
