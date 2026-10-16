@@ -25,7 +25,8 @@ import (
 
 const headersKey = "headers"
 
-var headersFilter = []string{"authorization", "cookie"} // lower case!
+// Headers that may carry credentials; Sec-WebSocket-Protocol carries bearer tokens for browser websockets. Lower case!
+var headersFilter = []string{"authorization", "proxy-authorization", "cookie", "x-api-key", "x-auth-token", "sec-websocket-protocol"}
 
 func HeadersGenerator(gc *gin.Context) (string, any) {
 	result := map[string]string{}
