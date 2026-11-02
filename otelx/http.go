@@ -45,6 +45,10 @@ func HTTPOpenTelemetry(ctx context.Context, endpoint string, serviceName string,
 	return h, nil
 }
 
+// AddBaggageToHTTPRequest adds key and value to the baggage of the request and, if a span is recording,
+// to its attributes. The value is taken literally: characters the baggage format cannot carry, such as a
+// space, a comma or an umlaut, are percent-encoded in the baggage header, and the attribute and
+// baggage.Member.Value() keep the original string.
 func AddBaggageToHTTPRequest(r *http.Request, key, value string) error {
 	if r == nil {
 		return fmt.Errorf("request is nil")
@@ -58,11 +62,8 @@ func AddBaggageToHTTPRequest(r *http.Request, key, value string) error {
 	if strings.Contains(key, " ") {
 		return fmt.Errorf("key contains spaces")
 	}
-	if strings.Contains(value, " ") {
-		return fmt.Errorf("value contains spaces")
-	}
 	bag := baggage.FromContext(r.Context())
-	member, err := baggage.NewMember(key, value)
+	member, err := baggage.NewMember(key, encodeBaggageValue(value))
 	if err != nil {
 		return fmt.Errorf("failed to create baggage member: %w", err)
 	}
