@@ -17,7 +17,7 @@ require (
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
@@ -33,7 +33,7 @@ require (
 )
 
 require (
-	github.com/SENERGY-Platform/service-commons v0.0.0-20260821114734-3e4578ac2358
+	github.com/SENERGY-Platform/service-commons v0.0.0-20261112092203-c8689838acc5
 	github.com/bytedance/sonic v1.15.1 // indirect
 	github.com/bytedance/sonic/loader v0.5.1 // indirect
 	github.com/cloudwego/base64x v0.1.7 // indirect
